@@ -19,6 +19,8 @@ namespace OpenExcel
 
         public EnumValue<CellValues> CellValueType { get; set; }
 
+        public string StyleIndexId { get; set; }
+
         public Func<T, string> Selector { get; set; }
     }
 }
