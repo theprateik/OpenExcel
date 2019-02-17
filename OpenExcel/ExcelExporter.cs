@@ -13,7 +13,7 @@ namespace OpenExcel
 
         }
 
-        public void CreateSpreadsheetWorkbook(string filePath)
+        public void CreateSpreadsheetWorkbook<T>(string filePath, List<T> data, List<OpenExcelColumn<T>> columns)
         {
             using (SpreadsheetDocument xl = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
             {
@@ -31,23 +31,23 @@ namespace OpenExcel
                     {
                         oxw.WriteStartElement(new SheetData());
                         {
-                            for (int i = 1; i <= 500; ++i)
+                            for (int i = 0; i < data.Count; i++)
                             {
                                 oxa = new List<OpenXmlAttribute>();
                                 // this is the row index
-                                oxa.Add(new OpenXmlAttribute("r", null, i.ToString()));
-                                if (i > 5 && i < 15)
-                                {
-                                    oxa.Add(new OpenXmlAttribute("outlineLevel", string.Empty, "1"));
-                                }
+                                //oxa.Add(new OpenXmlAttribute("r", null, i.ToString()));
+                                //if (i > 5 && i < 15)
+                                //{
+                                //    oxa.Add(new OpenXmlAttribute("outlineLevel", string.Empty, "1"));
+                                //}
                                 oxw.WriteStartElement(new Row(), oxa);
 
-                                for (int j = 1; j <= 100; ++j)
+                                foreach(var column in columns)/* (int j = 0; j <= columns.Count; i++)*/
                                 {
                                     oxa = new List<OpenXmlAttribute>();
                                     // this is the data type ("t"), with CellValues.String ("str")
-                                    oxa.Add(new OpenXmlAttribute("t", null, CellValues.Date.ToString()));
-                                    oxa.Add(new OpenXmlAttribute("s", null, "3"));
+                                    oxa.Add(new OpenXmlAttribute("t", null, column.CellValueType.ToString()));
+                                    //oxa.Add(new OpenXmlAttribute("s", null, "3"));
                                     //oxa.Add(new OpenXmlAttribute("s", null, "1"));
 
 
@@ -57,10 +57,10 @@ namespace OpenExcel
                                     //oxa.Add(new OpenXmlAttribute("r", null, "A1"));
 
                                     oxw.WriteStartElement(new Cell(), oxa);
-
-                                    //oxw.WriteElement(new CellValue(string.Format("R{0}C{1}", i, j)));
-                                    oxw.WriteElement(new CellValue("01/01/2018 05:05:22"));
-
+                                    {
+                                        //oxw.WriteElement(new CellValue(string.Format("R{0}C{1}", i, j)));
+                                        oxw.WriteElement(new CellValue(column.Selector(data[i])));
+                                    }
                                     // this is for Cell
                                     oxw.WriteEndElement();
                                 }
