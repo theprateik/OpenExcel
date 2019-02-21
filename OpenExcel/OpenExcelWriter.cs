@@ -12,6 +12,8 @@ namespace OpenExcel
         private readonly string _filePath;
         private OpenXmlWriter _workSheetWriter;
         private OpenXmlWriter _workBookWriter;
+        private StyleSheetWriter _styleSheetWriter;
+
         private readonly SpreadsheetDocument _xl;
         private uint _sheetId = 0;
         private uint _newSheetId
@@ -26,6 +28,7 @@ namespace OpenExcel
         {
             _filePath = filePath;
             _xl = SpreadsheetDocument.Create(_filePath, SpreadsheetDocumentType.Workbook);
+            _styleSheetWriter = new StyleSheetWriter(_xl);
 
             Initialize();
         }
@@ -34,7 +37,7 @@ namespace OpenExcel
         {
             _xl.AddWorkbookPart();
 
-            AddStyleSheet();
+            WriteStyleSheet();
 
             _workBookWriter = OpenXmlWriter.Create(_xl.WorkbookPart);
             _workBookWriter.WriteStartElement(new Workbook());
@@ -72,7 +75,7 @@ namespace OpenExcel
             _xl.Close();
         }
 
-        public void AddStyleSheet()
+        private void WriteStyleSheet()
         {
             var ss = _xl.WorkbookPart.AddNewPart<WorkbookStylesPart>();
 
@@ -91,6 +94,13 @@ namespace OpenExcel
                     {
                         ssWriter.WriteStartElement(new Font());
                         {
+                        }
+                        ssWriter.WriteEndElement();
+
+                        ssWriter.WriteStartElement(new Font());
+                        {
+                            ssWriter.WriteElement(new Italic());
+                            ssWriter.WriteElement(new FontSize() { Val = 11 });
                         }
                         ssWriter.WriteEndElement();
 
@@ -162,9 +172,9 @@ namespace OpenExcel
             }
         }
 
-        public void InsertHeader<T>(List<OpenExcelColumn<T>> columns)
+        public void InsertHeader<T>(List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
         {
-            InsertRowToSheet(columns.Select(x => x.Name).ToList());
+            InsertRowToSheet(columns.Select(x => x.Name).ToList(), nestedLevel);
         }
 
         public void InsertDataSetToSheet<T>(List<T> data, List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
@@ -190,6 +200,10 @@ namespace OpenExcel
 
             foreach (var column in columns)/* (int j = 0; j <= columns.Count; i++)*/
             {
+                //TODO: Write the stylkesheet here
+
+
+
                 attributes = new List<OpenXmlAttribute>
                     {
                         // this is the data type ("t"), with CellValues.String ("str")
@@ -218,10 +232,14 @@ namespace OpenExcel
             _workSheetWriter.WriteEndElement();
         }
 
-        public void InsertRowToSheet(List<string> cellValues)
+        public void InsertRowToSheet(List<string> cellValues, int nestedLevel = 0)
         {
             List<OpenXmlAttribute> attributes;
             attributes = new List<OpenXmlAttribute>();
+            if (nestedLevel != 0)
+            {
+                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, nestedLevel.ToString()));
+            }
             _workSheetWriter.WriteStartElement(new Row(), attributes);
             {
                 foreach(var v in cellValues)
@@ -242,6 +260,7 @@ namespace OpenExcel
             _workSheetWriter.WriteEndElement();
 
         }
+
         public void Dispose()
         {
             _workSheetWriter.Dispose();
