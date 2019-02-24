@@ -1,9 +1,8 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System;
+using OpenExcel.Models;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OpenExcel
 {
@@ -14,7 +13,6 @@ namespace OpenExcel
             using (SpreadsheetDocument xl = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
             {
                 OpenXmlWriter oxw;
-                int rowCounter = 0;
 
                 xl.AddWorkbookPart();
                 AddStyleSheetOld(xl);
@@ -79,7 +77,6 @@ namespace OpenExcel
             using (SpreadsheetDocument xl = SpreadsheetDocument.Create(filePath, SpreadsheetDocumentType.Workbook))
             {
                 OpenXmlWriter oxw;
-                int rowCounter = 0;
 
                 xl.AddWorkbookPart();
                 AddStyleSheetOld(xl);

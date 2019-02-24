@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OpenExcel
+namespace OpenExcel.Writers
 {
     public class StyleSheetWriter : IDisposable
     {

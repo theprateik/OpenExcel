@@ -1,12 +1,13 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using OpenExcel.Models;
 using OpenExcel.Props;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OpenExcel
+namespace OpenExcel.Writers
 {
     public class OpenExcelWriter : IDisposable
     {

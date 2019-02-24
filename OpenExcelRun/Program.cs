@@ -1,6 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using OpenExcel;
+using OpenExcel.Models;
 using OpenExcel.Props;
+using OpenExcel.Writers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +11,7 @@ namespace OpenExcelRun
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var listPersons = new List<Person>();
            
@@ -58,29 +60,29 @@ namespace OpenExcelRun
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            using (var writer = new OpenExcelWriter("D:\\Projects\\Temp\\Persons2.xlsx"))
+            using (var openExcel = OpenExcelFactory.CreateOpenExcel("D:\\Projects\\Temp\\Persons2.xlsx"))
             {
                 var sheetProperties = new OpenExcelSheetProperties
                 {
                     OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false }
                 };
 
-                writer.StartCreatingSheet("Prateik Sheet", sheetProperties);
-                writer.InsertHeader(columns);
+                openExcel.StartCreatingSheet("Prateik Sheet", sheetProperties);
+                openExcel.InsertHeader(columns);
                 foreach (var person in listPersons)
                 {
-                    writer.InsertDataSetToSheet(new List<Person> { person }, columns);
-                    writer.InsertHeader(childColumns, 1);
-                    writer.InsertDataSetToSheet(person.Children, childColumns, 1);
-                    writer.InsertRowToSheet(new List<string> { string.Empty }, 1);
+                    openExcel.InsertDataSetToSheet(new List<Person> { person }, columns);
+                    openExcel.InsertHeader(childColumns, 1);
+                    openExcel.InsertDataSetToSheet(person.Children, childColumns, 1);
+                    openExcel.InsertRowToSheet(new List<string> { string.Empty }, 1);
                 }
-                writer.EndCreatingSheet();
+                openExcel.EndCreatingSheet();
 
-                writer.StartCreatingSheet("Ronas Sheet");
-                writer.InsertDataSetToSheet(listPersons, columns);
-                writer.EndCreatingSheet();
+                openExcel.StartCreatingSheet("Ronas Sheet");
+                openExcel.InsertDataSetToSheet(listPersons, columns);
+                openExcel.EndCreatingSheet();
 
-                writer.EndCreatingWorkbook();
+                openExcel.EndCreatingWorkbook();
             }
 
             stopwatch.Stop();
