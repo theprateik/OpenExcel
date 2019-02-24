@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using OpenExcel.Props;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace OpenExcel
             _workBookWriter.WriteStartElement(new Sheets());
         }
 
-        public void StartCreatingSheet(string sheetName, SheetProperties sheetProperties = default)
+        public void StartCreatingSheet(string sheetName, OpenExcelSheetProperties sheetProperties = default)
         {
             _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
@@ -189,20 +190,20 @@ namespace OpenExcel
             _workSheetWriter.WriteEndElement();
         }
 
-        private void WriteSheetProperties(SheetProperties sheetProperties)
+        private void WriteSheetProperties(OpenExcelSheetProperties sheetProperties)
         {
             if (sheetProperties != null)
             {
                 _workSheetWriter.WriteStartElement(new SheetProperties());
                 {
-                    _workSheetWriter.WriteElement(sheetProperties.OutlineProperties);
-                    //_workSheetWriter.WriteElement(new OutlineProperties
-                    //{
-                    //    SummaryBelow = sheetProperties.OutlineProperties.SummaryBelow,
-                    //    ApplyStyles = sheetProperties.OutlineProperties.ApplyStyles,
-                    //    SummaryRight = sheetProperties.OutlineProperties.SummaryRight,
-                    //    ShowOutlineSymbols = sheetProperties.OutlineProperties.ShowOutlineSymbols
-                    //});
+                    if (sheetProperties.OutlineProperties != null)
+                    {
+                        _workSheetWriter.WriteElement(new OutlineProperties
+                        {
+                            SummaryBelow = sheetProperties.OutlineProperties.SummaryBelow,
+                            SummaryRight = sheetProperties.OutlineProperties.SummaryRight
+                        });
+                    }                    
                 }
                 _workSheetWriter.WriteEndElement();
             }

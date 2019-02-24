@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using OpenExcel;
+using OpenExcel.Props;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,10 +60,11 @@ namespace OpenExcelRun
 
             using (var writer = new OpenExcelWriter("D:\\Projects\\Temp\\Persons2.xlsx"))
             {
-                var sheetProperties = new SheetProperties
+                var sheetProperties = new OpenExcelSheetProperties
                 {
-                    OutlineProperties = new OutlineProperties { SummaryBelow = false, ShowOutlineSymbols = true }
+                    OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false }
                 };
+
                 writer.StartCreatingSheet("Prateik Sheet", sheetProperties);
                 writer.InsertHeader(columns);
                 foreach (var person in listPersons)
