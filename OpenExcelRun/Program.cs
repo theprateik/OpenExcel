@@ -59,15 +59,18 @@ namespace OpenExcelRun
 
             using (var writer = new OpenExcelWriter("D:\\Projects\\Temp\\Persons2.xlsx"))
             {
-                writer.StartCreatingSheet("Prateik Sheet");
-
+                var sheetProperties = new SheetProperties
+                {
+                    OutlineProperties = new OutlineProperties { SummaryBelow = false, ShowOutlineSymbols = true }
+                };
+                writer.StartCreatingSheet("Prateik Sheet", sheetProperties);
                 writer.InsertHeader(columns);
                 foreach (var person in listPersons)
                 {
                     writer.InsertDataSetToSheet(new List<Person> { person }, columns);
                     writer.InsertHeader(childColumns, 1);
                     writer.InsertDataSetToSheet(person.Children, childColumns, 1);
-                    writer.InsertRowToSheet(new List<string> { string.Empty });
+                    writer.InsertRowToSheet(new List<string> { string.Empty }, 1);
                 }
                 writer.EndCreatingSheet();
 

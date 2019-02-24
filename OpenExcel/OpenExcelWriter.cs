@@ -56,7 +56,7 @@ namespace OpenExcel
             _workBookWriter.WriteStartElement(new Sheets());
         }
 
-        public void StartCreatingSheet(string sheetName)
+        public void StartCreatingSheet(string sheetName, SheetProperties sheetProperties = default)
         {
             _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
@@ -70,6 +70,8 @@ namespace OpenExcel
 
             _workSheetWriter = OpenXmlWriter.Create(wsPart);
             _workSheetWriter.WriteStartElement(new Worksheet());
+
+            WriteSheetProperties(sheetProperties);
             _workSheetWriter.WriteStartElement(new SheetData());
         }
 
@@ -185,6 +187,25 @@ namespace OpenExcel
                 insertCells();
             }
             _workSheetWriter.WriteEndElement();
+        }
+
+        private void WriteSheetProperties(SheetProperties sheetProperties)
+        {
+            if (sheetProperties != null)
+            {
+                _workSheetWriter.WriteStartElement(new SheetProperties());
+                {
+                    _workSheetWriter.WriteElement(sheetProperties.OutlineProperties);
+                    //_workSheetWriter.WriteElement(new OutlineProperties
+                    //{
+                    //    SummaryBelow = sheetProperties.OutlineProperties.SummaryBelow,
+                    //    ApplyStyles = sheetProperties.OutlineProperties.ApplyStyles,
+                    //    SummaryRight = sheetProperties.OutlineProperties.SummaryRight,
+                    //    ShowOutlineSymbols = sheetProperties.OutlineProperties.ShowOutlineSymbols
+                    //});
+                }
+                _workSheetWriter.WriteEndElement();
+            }
         }
 
         public void Dispose()
