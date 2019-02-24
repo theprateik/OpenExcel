@@ -14,7 +14,7 @@ namespace OpenExcelRun
             Console.WriteLine("Hello World!");
             var listPersons = new List<Person>();
            
-            for (int i = 0; i <= 100; i++)
+            for (int i = 0; i <= 50000; i++)
             {
                 listPersons.Add(new Person
                 {
@@ -53,7 +53,7 @@ namespace OpenExcelRun
                 new OpenExcelColumn<Child>("Home Schooled", CellValues.String, (x) => x.IsHomeSchooled ? "Yes" : "No"){ CellFormat = Styles.CellFormat.C2}
             };
 
-            new ExcelExporter().CreateSpreadsheetWorkbook("D:\\Projects\\Temp\\Persons.xlsx", listPersons, columns);
+            //new ExcelExporter().CreateSpreadsheetWorkbook("D:\\Projects\\Temp\\Persons.xlsx", listPersons, columns);
 
             using (var writer = new OpenExcelWriter("D:\\Projects\\Temp\\Persons2.xlsx"))
             {

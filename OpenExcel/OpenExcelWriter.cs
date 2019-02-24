@@ -205,7 +205,6 @@ namespace OpenExcel
 
             foreach (var column in columns)/* (int j = 0; j <= columns.Count; i++)*/
             {
-                //TODO: Write the stylkesheet here
                 var styleIdx = _styleSheetWriter.InsertIfNotExist(column.CellFormat);
                 if (column.CellFormatRule != null)
                 {
@@ -275,6 +274,7 @@ namespace OpenExcel
         {
             _workSheetWriter.Dispose();
             _workBookWriter.Dispose();
+            _styleSheetWriter.Dispose();
             _xl.Dispose();
         }
     }

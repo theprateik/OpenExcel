@@ -14,11 +14,11 @@ namespace OpenExcel
 
         private readonly SpreadsheetDocument _xl;
         private readonly OpenXmlWriter _writer;
-        private readonly Dictionary<string, uint> _cellFormatIdx;
-        private readonly Dictionary<string, uint> _fontIdx;
-        private readonly Dictionary<string, uint> _numberingFormatIdx;
-        private readonly Dictionary<string, uint> _fillIdx;
-        private readonly Dictionary<string, uint> _borderIdx;
+        private readonly Dictionary<string, uint> _cellFormatIdx = new Dictionary<string, uint>();
+        private readonly Dictionary<string, uint> _fontIdx = new Dictionary<string, uint>();
+        private readonly Dictionary<string, uint> _numberingFormatIdx = new Dictionary<string, uint>();
+        private readonly Dictionary<string, uint> _fillIdx = new Dictionary<string, uint>();
+        private readonly Dictionary<string, uint> _borderIdx = new Dictionary<string, uint>();
 
         private readonly List<OpenExcelFont> _fonts = new List<OpenExcelFont>();
         private readonly List<OpenExcelNumberingFormat> _numberingFormats = new List<OpenExcelNumberingFormat>();
@@ -28,27 +28,18 @@ namespace OpenExcel
 
         public StyleSheetWriter(SpreadsheetDocument xl)
         {
-            _cellFormatIdx = new Dictionary<string, uint>();
-            _fontIdx = new Dictionary<string, uint>();
-            _numberingFormatIdx = new Dictionary<string, uint>();
-            _fillIdx = new Dictionary<string, uint>();
-            _borderIdx = new Dictionary<string, uint>();
-
             _xl = xl;
 
             var wbStylesPart = _xl.WorkbookPart.AddNewPart<WorkbookStylesPart>();
             _writer = OpenXmlWriter.Create(wbStylesPart);
 
-            Initialize();
+            AddInitialStyles();
         }
 
-        private void Initialize()
+        private void AddInitialStyles()
         {
             _fonts.Add(new OpenExcelFont("0"));
             _fontIdx.Add(Guid.NewGuid().ToString(), 1);
-
-            //_numberingFormats.Add(new OpenExcelNumberingFormat(_customNumFormatIdStarter.ToString()));
-            //_numberingFormatIdx.Add(Guid.NewGuid().ToString(), 0);
 
             _fills.Add(new OpenExcelFill("0") { PatternType = PatternValues.None }); // required, reserved by Excel
             _fillIdx.Add(Guid.NewGuid().ToString(), 0);
@@ -85,17 +76,19 @@ namespace OpenExcel
                     {
                         if (!string.IsNullOrWhiteSpace(font.FontName))
                         {
-                            // TODO
+                            _writer.WriteElement(new FontName { Val = font.FontName });
                         }
 
                         if (font.FontSize != null)
                         {
                             _writer.WriteElement(new FontSize { Val = font.FontSize });
                         }
-                        //if (font.Color != null)
-                        //{
-                        //    _writer.WriteElement(new Color {  });
-                        //}
+
+                        if (font.Color != null)
+                        {
+                            _writer.WriteElement(new Color { Rgb = font.Color });
+                        }
+
                         if (font.Italic)
                         {
                             _writer.WriteElement(new Italic());
