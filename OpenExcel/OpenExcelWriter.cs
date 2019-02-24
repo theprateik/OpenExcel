@@ -9,6 +9,8 @@ namespace OpenExcel
 {
     public class OpenExcelWriter : IDisposable
     {
+        private const uint _rowIdxReset = 0;
+
         private readonly string _filePath;
         private OpenXmlWriter _workSheetWriter;
         private OpenXmlWriter _workBookWriter;
@@ -24,6 +26,17 @@ namespace OpenExcel
                 return _sheetId;
             }
         }
+        private uint _rowIdx;
+        private uint _newRowIdx
+        {
+            get
+            {
+                _rowIdx++;
+
+                return _rowIdx;
+            }
+        }
+
         public OpenExcelWriter(string filePath)
         {
             _filePath = filePath;
@@ -38,8 +51,6 @@ namespace OpenExcel
 
             _styleSheetWriter = new StyleSheetWriter(_xl);
 
-            //WriteStyleSheet();
-
             _workBookWriter = OpenXmlWriter.Create(_xl.WorkbookPart);
             _workBookWriter.WriteStartElement(new Workbook());
             _workBookWriter.WriteStartElement(new Sheets());
@@ -47,6 +58,7 @@ namespace OpenExcel
 
         public void StartCreatingSheet(string sheetName)
         {
+            _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
 
             _workBookWriter.WriteElement(new Sheet()
@@ -72,109 +84,12 @@ namespace OpenExcel
         {
             _workBookWriter.WriteEndElement();  // End Writing Sheets
             _workBookWriter.WriteEndElement(); // End Writing Workbook 
+
             _workBookWriter.Close();
 
-            //WriteStyleSheet();
             _styleSheetWriter.Write();
 
             _xl.Close();
-        }
-
-        private void WriteStyleSheet()
-        {
-            var ss = _xl.WorkbookPart.AddNewPart<WorkbookStylesPart>();
-
-            using (var ssWriter = OpenXmlWriter.Create(ss))
-            {
-                ssWriter.WriteStartElement(new Stylesheet());
-                {
-                    ssWriter.WriteStartElement(new NumberingFormats());
-                    {
-                        //ssWriter.WriteElement(new NumberingFormat());
-                        ssWriter.WriteElement(new NumberingFormat() { NumberFormatId = 164U, FormatCode = "mm/dd/yyyy hh:mm:ss" });
-                    }
-                    ssWriter.WriteEndElement();
-
-                    ssWriter.WriteStartElement(new Fonts());
-                    {
-                        ssWriter.WriteStartElement(new Font());
-                        {
-                        }
-                        ssWriter.WriteEndElement();
-
-                        ssWriter.WriteStartElement(new Font());
-                        {
-                            ssWriter.WriteElement(new Italic());
-                            ssWriter.WriteElement(new FontSize() { Val = 11 });
-                        }
-                        ssWriter.WriteEndElement();
-
-                        ssWriter.WriteStartElement(new Font());
-                        {
-                            ssWriter.WriteElement(new Italic());
-                            ssWriter.WriteElement(new FontSize() { Val = 11 });
-                        }
-                        ssWriter.WriteEndElement();
-
-                        ssWriter.WriteStartElement(new Font());
-                        {
-                            ssWriter.WriteElement(new Bold());
-                            ssWriter.WriteElement(new FontSize() { Val = 12 });
-                        }
-                        ssWriter.WriteEndElement();
-                    }
-                    ssWriter.WriteEndElement();
-
-                    ssWriter.WriteStartElement(new Fills());
-                    {
-                        ssWriter.WriteStartElement(new Fill());
-                        {
-                            ssWriter.WriteElement(new PatternFill() { PatternType = PatternValues.None });
-                        }
-                        ssWriter.WriteEndElement();
-
-                        ssWriter.WriteStartElement(new Fill());
-                        {
-                            ssWriter.WriteElement(new PatternFill() { PatternType = PatternValues.DarkGray });
-                        }
-                        ssWriter.WriteEndElement();
-                    }
-                    ssWriter.WriteEndElement();
-
-                    ssWriter.WriteStartElement(new Borders());
-                    {
-                        ssWriter.WriteStartElement(new Border());
-                        {
-                            ssWriter.WriteElement(new LeftBorder());
-                            ssWriter.WriteElement(new RightBorder());
-                            ssWriter.WriteElement(new TopBorder());
-                            ssWriter.WriteElement(new BottomBorder());
-                            ssWriter.WriteElement(new DiagonalBorder());
-                        }
-                        ssWriter.WriteEndElement();
-                    }
-                    ssWriter.WriteEndElement();
-
-                    ssWriter.WriteStartElement(new CellStyleFormats() { Count = 1 });
-                    {
-                        ssWriter.WriteElement(new CellFormat() { FontId = 0U, FillId = 0U, BorderId = 0U });
-                    }
-                    ssWriter.WriteEndElement();
-
-                    ssWriter.WriteStartElement(new CellFormats() /*{ Count = 1 }*/);
-                    {
-                        ssWriter.WriteElement(new CellFormat() { FontId = 0U, FillId = 0U, BorderId = 0U });
-                        ssWriter.WriteElement(new CellFormat() { FontId = 1U, FillId = 0U, BorderId = 0U });
-                        ssWriter.WriteElement(new CellFormat() { FontId = 2U, FillId = 0U, BorderId = 0U });
-                        ssWriter.WriteElement(new CellFormat() { NumberFormatId = 164U, FontId = 2U, FillId = 1U, BorderId = 0U, ApplyNumberFormat = true, FormatId = 0, });
-                        //ssWriter.WriteElement(new CellFormat() { FontId = 1, FillId = 0 });
-                    }
-                    ssWriter.WriteEndElement();
-                }
-                ssWriter.WriteEndElement();
-
-                ssWriter.Close();
-            }
         }
 
         public void InsertHeader<T>(List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
@@ -192,66 +107,49 @@ namespace OpenExcel
 
         public void InsertRowToSheet<T>(T record, List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
         {
-            List<OpenXmlAttribute> attributes;
-            //rowCounter++;
-            attributes = new List<OpenXmlAttribute>();
-            // this is the row index
-            //attributes.Add(new OpenXmlAttribute("r", null, i.ToString()));
-            if (nestedLevel != 0)
+            void insertCells()
             {
-                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, nestedLevel.ToString()));
-            }
-            _workSheetWriter.WriteStartElement(new Row(), attributes);
+                List<OpenXmlAttribute> attributes;
 
-            foreach (var column in columns)/* (int j = 0; j <= columns.Count; i++)*/
-            {
-                var styleIdx = _styleSheetWriter.InsertIfNotExist(column.CellFormat);
-                if (column.CellFormatRule != null)
+                foreach (var column in columns)
                 {
-                    var cellFormat = column.CellFormatRule(record);
-                    styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
-                }
+                    var styleIdx = _styleSheetWriter.InsertIfNotExist(column.CellFormat);
 
-                attributes = new List<OpenXmlAttribute>
+                    if (column.CellFormatRule != null)
                     {
-                        // this is the data type ("t"), with CellValues.String ("str")
-                        new OpenXmlAttribute("t", null, column.CellValueType.ToString()),
-                        //attributes.Add(new OpenXmlAttribute("s", null, "3"));
-                        new OpenXmlAttribute("s", null, styleIdx.ToString())
-                        //new OpenXmlAttribute("s", null, column.StyleIndexId)
+                        var cellFormat = column.CellFormatRule(record);
+                        styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
+                    }
+
+                    attributes = new List<OpenXmlAttribute>
+                    {
+                        new OpenXmlAttribute("t", null, column.CellValueType.ToString()), // DataType
+                        new OpenXmlAttribute("s", null, styleIdx.ToString()) // Style Index
                     };
-                //attributes.Add(new OpenXmlAttribute("s", null, "1"));
 
+                    // it's suggested you also have the cell reference, but
+                    // you'll have to calculate the correct cell reference yourself.
+                    // Here's an example:
+                    //attributes.Add(new OpenXmlAttribute("r", null, "A1"));
 
-                // it's suggested you also have the cell reference, but
-                // you'll have to calculate the correct cell reference yourself.
-                // Here's an example:
-                //attributes.Add(new OpenXmlAttribute("r", null, "A1"));
-
-                _workSheetWriter.WriteStartElement(new Cell(), attributes);
-                {
-                    //_writer.WriteElement(new CellValue(string.Format("R{0}C{1}", i, j)));
-                    _workSheetWriter.WriteElement(new CellValue(column.Selector(record)));
+                    _workSheetWriter.WriteStartElement(new Cell(), attributes);
+                    {
+                        _workSheetWriter.WriteElement(new CellValue(column.Selector(record)));
+                    }
+                    _workSheetWriter.WriteEndElement();
                 }
-                // this is for Cell
-                _workSheetWriter.WriteEndElement();
             }
 
-            // this is for Row
-            _workSheetWriter.WriteEndElement();
+            InsertRow(insertCells, nestedLevel);
         }
 
         public void InsertRowToSheet(List<string> cellValues, int nestedLevel = 0)
         {
-            List<OpenXmlAttribute> attributes;
-            attributes = new List<OpenXmlAttribute>();
-            if (nestedLevel != 0)
+            void insertCells()
             {
-                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, nestedLevel.ToString()));
-            }
-            _workSheetWriter.WriteStartElement(new Row(), attributes);
-            {
-                foreach(var v in cellValues)
+                List<OpenXmlAttribute> attributes;
+
+                foreach (var v in cellValues)
                 {
                     attributes = new List<OpenXmlAttribute>
                     {
@@ -260,14 +158,33 @@ namespace OpenExcel
 
                     _workSheetWriter.WriteStartElement(new Cell(), attributes);
                     {
-                        //_writer.WriteElement(new CellValue(string.Format("R{0}C{1}", i, j)));
                         _workSheetWriter.WriteElement(new CellValue(v));
                     }
                     _workSheetWriter.WriteEndElement();
                 }
             }
-            _workSheetWriter.WriteEndElement();
 
+            InsertRow(insertCells, nestedLevel);
+        }
+
+        private void InsertRow(Action insertCells, int nestedLevel)
+        {
+            List<OpenXmlAttribute> attributes;
+            attributes = new List<OpenXmlAttribute>
+            {
+                new OpenXmlAttribute("r", null, _newRowIdx.ToString())
+            };
+
+            if (nestedLevel != 0)
+            {
+                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, nestedLevel.ToString()));
+            }
+
+            _workSheetWriter.WriteStartElement(new Row(), attributes);
+            {
+                insertCells();
+            }
+            _workSheetWriter.WriteEndElement();
         }
 
         public void Dispose()

@@ -1,9 +1,8 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
 using OpenExcel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OpenExcelRun
 {
@@ -11,10 +10,9 @@ namespace OpenExcelRun
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             var listPersons = new List<Person>();
            
-            for (int i = 0; i <= 50000; i++)
+            for (int i = 0; i <= 500; i++)
             {
                 listPersons.Add(new Person
                 {
@@ -55,6 +53,10 @@ namespace OpenExcelRun
 
             //new ExcelExporter().CreateSpreadsheetWorkbook("D:\\Projects\\Temp\\Persons.xlsx", listPersons, columns);
 
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             using (var writer = new OpenExcelWriter("D:\\Projects\\Temp\\Persons2.xlsx"))
             {
                 writer.StartCreatingSheet("Prateik Sheet");
@@ -75,7 +77,9 @@ namespace OpenExcelRun
 
                 writer.EndCreatingWorkbook();
             }
+
+            stopwatch.Stop();
+            Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
         }
     }
-
 }
