@@ -150,7 +150,7 @@ namespace OpenExcel.Writers
             _writer.WriteEndElement();
         }
 
-        public void Write()
+        public void WriteAndClose()
         {
             _writer.WriteStartElement(new Stylesheet());
             {

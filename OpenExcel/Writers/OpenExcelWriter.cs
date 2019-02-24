@@ -17,6 +17,7 @@ namespace OpenExcel.Writers
         private OpenXmlWriter _workSheetWriter;
         private OpenXmlWriter _workBookWriter;
         private StyleSheetWriter _styleSheetWriter;
+        private SharedStringWriter _sharedStringWriter;
 
         private readonly SpreadsheetDocument _xl;
         private uint _sheetId = 0;
@@ -52,6 +53,7 @@ namespace OpenExcel.Writers
             _xl.AddWorkbookPart();
 
             _styleSheetWriter = new StyleSheetWriter(_xl);
+            _sharedStringWriter = new SharedStringWriter(_xl);
 
             _workBookWriter = OpenXmlWriter.Create(_xl.WorkbookPart);
             _workBookWriter.WriteStartElement(new Workbook());
@@ -91,14 +93,14 @@ namespace OpenExcel.Writers
 
             _workBookWriter.Close();
 
-            _styleSheetWriter.Write();
-
+            _sharedStringWriter.Close();
+            _styleSheetWriter.WriteAndClose();
             _xl.Close();
         }
 
         public void InsertHeader<T>(List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
         {
-            InsertRowToSheet(columns.Select(x => x.Name).ToList(), nestedLevel);
+            InsertRowToSheet(columns.Select(x => x.Name).ToList(), nestedLevel, CellValues.SharedString);
         }
 
         public void InsertDataSetToSheet<T>(List<T> data, List<OpenExcelColumn<T>> columns, int nestedLevel = 0)
@@ -125,6 +127,15 @@ namespace OpenExcel.Writers
                         styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
                     }
 
+
+                    string cellValue = column.Selector(record);
+                    if (column.CellValueType == CellValues.SharedString)
+                    {
+                        var sharedStringIdx = _sharedStringWriter.Write(cellValue);
+
+                        cellValue = sharedStringIdx.ToString();
+                    }
+
                     attributes = new List<OpenXmlAttribute>
                     {
                         new OpenXmlAttribute("t", null, column.CellValueType.ToString()), // DataType
@@ -138,7 +149,7 @@ namespace OpenExcel.Writers
 
                     _workSheetWriter.WriteStartElement(new Cell(), attributes);
                     {
-                        _workSheetWriter.WriteElement(new CellValue(column.Selector(record)));
+                        _workSheetWriter.WriteElement(new CellValue(cellValue));
                     }
                     _workSheetWriter.WriteEndElement();
                 }
@@ -147,7 +158,7 @@ namespace OpenExcel.Writers
             InsertRow(insertCells, nestedLevel);
         }
 
-        public void InsertRowToSheet(List<string> cellValues, int nestedLevel = 0)
+        public void InsertRowToSheet(List<string> cellValues, int nestedLevel = 0, EnumValue<CellValues> cellValueType = null)
         {
             void insertCells()
             {
@@ -155,14 +166,20 @@ namespace OpenExcel.Writers
 
                 foreach (var v in cellValues)
                 {
+                    var cellValue = v;
+                    if (cellValueType == CellValues.SharedString)
+                    {
+                        var sharedStringIdx = _sharedStringWriter.Write(cellValue);
+                        cellValue = sharedStringIdx.ToString();
+                    }
                     attributes = new List<OpenXmlAttribute>
                     {
-                        new OpenXmlAttribute("t", null, "str")
+                        new OpenXmlAttribute("t", null, cellValueType != null ? cellValueType.ToString() : ((EnumValue<CellValues>)CellValues.String).ToString())
                     };
 
                     _workSheetWriter.WriteStartElement(new Cell(), attributes);
                     {
-                        _workSheetWriter.WriteElement(new CellValue(v));
+                        _workSheetWriter.WriteElement(new CellValue(cellValue));
                     }
                     _workSheetWriter.WriteEndElement();
                 }

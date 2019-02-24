@@ -15,7 +15,7 @@ namespace OpenExcelRun
         {
             var listPersons = new List<Person>();
            
-            for (int i = 0; i <= 500; i++)
+            for (int i = 0; i <= 10000; i++)
             {
                 listPersons.Add(new Person
                 {
@@ -34,24 +34,24 @@ namespace OpenExcelRun
 
             var columns = new List<OpenExcelColumn<Person>>
             {
-                new OpenExcelColumn<Person>("Name", CellValues.String, (x) => x.Name) { CellFormat = Styles.CellFormat.C1},
+                new OpenExcelColumn<Person>("Name", CellValues.SharedString, (x) => x.Name) { CellFormat = Styles.CellFormat.C1 },
                 //new OpenExcelColumn<Person>("Name", CellValues.String, (x) => x.Name) ,
                 new OpenExcelColumn<Person>("Age", CellValues.Number, (x) => x.Age.ToString()){ CellFormat = Styles.CellFormat.C3},
-                new OpenExcelColumn<Person>("Date Of Birth", CellValues.String, (x) => x.DateOfBirth.ToString()){ CellFormat = Styles.CellFormat.C1},
+                new OpenExcelColumn<Person>("Date Of Birth", CellValues.SharedString, (x) => x.DateOfBirth.ToString()){ CellFormat = Styles.CellFormat.C1},
                 new OpenExcelColumn<Person>("Income", CellValues.Number, (x) => x.Income.ToString()){ CellFormat = Styles.CellFormat.C1}
             };
 
             var childColumns = new List<OpenExcelColumn<Child>>
             {
-                new OpenExcelColumn<Child>("", CellValues.String, (x) => ""){ CellFormat = Styles.CellFormat.C2},
-                new OpenExcelColumn<Child>("Name", CellValues.String, (x) => x.Name){ CellFormat = Styles.CellFormat.C2} ,
+                new OpenExcelColumn<Child>(string.Empty, CellValues.SharedString, (x) => string.Empty){ CellFormat = Styles.CellFormat.C2},
+                new OpenExcelColumn<Child>("Name", CellValues.SharedString, (x) => x.Name){ CellFormat = Styles.CellFormat.C2} ,
                 new OpenExcelColumn<Child>("Age", CellValues.Number, (x) => x.Age.ToString()){ CellFormat = Styles.CellFormat.C2},
-                new OpenExcelColumn<Child>("Adopted?", CellValues.String, (x) => x.IsAdopted ? "Yes" : "No")
+                new OpenExcelColumn<Child>("Adopted?", CellValues.SharedString, (x) => x.IsAdopted ? "Yes" : "No")
                 {
                     /*CellFormat = Styles.CellFormat.C2*/
                     CellFormatRule = (x) => x.IsAdopted ? Styles.CellFormat.C4 : Styles.CellFormat.C2
                 },
-                new OpenExcelColumn<Child>("Home Schooled", CellValues.String, (x) => x.IsHomeSchooled ? "Yes" : "No"){ CellFormat = Styles.CellFormat.C2}
+                new OpenExcelColumn<Child>("Home Schooled", CellValues.SharedString, (x) => x.IsHomeSchooled ? "Yes" : "No"){ CellFormat = Styles.CellFormat.C2}
             };
 
             //new ExcelExporter().CreateSpreadsheetWorkbook("D:\\Projects\\Temp\\Persons.xlsx", listPersons, columns);
@@ -74,7 +74,7 @@ namespace OpenExcelRun
                     openExcel.InsertDataSetToSheet(new List<Person> { person }, columns);
                     openExcel.InsertHeader(childColumns, 1);
                     openExcel.InsertDataSetToSheet(person.Children, childColumns, 1);
-                    openExcel.InsertRowToSheet(new List<string> { string.Empty }, 1);
+                    openExcel.InsertRowToSheet(new List<string> { string.Empty }, 1, CellValues.SharedString);
                 }
                 openExcel.EndCreatingSheet();
 
