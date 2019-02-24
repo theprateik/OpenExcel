@@ -28,7 +28,6 @@ namespace OpenExcel
         {
             _filePath = filePath;
             _xl = SpreadsheetDocument.Create(_filePath, SpreadsheetDocumentType.Workbook);
-            _styleSheetWriter = new StyleSheetWriter(_xl);
 
             Initialize();
         }
@@ -37,7 +36,9 @@ namespace OpenExcel
         {
             _xl.AddWorkbookPart();
 
-            WriteStyleSheet();
+            _styleSheetWriter = new StyleSheetWriter(_xl);
+
+            //WriteStyleSheet();
 
             _workBookWriter = OpenXmlWriter.Create(_xl.WorkbookPart);
             _workBookWriter.WriteStartElement(new Workbook());
@@ -72,6 +73,10 @@ namespace OpenExcel
             _workBookWriter.WriteEndElement();  // End Writing Sheets
             _workBookWriter.WriteEndElement(); // End Writing Workbook 
             _workBookWriter.Close();
+
+            //WriteStyleSheet();
+            _styleSheetWriter.Write();
+
             _xl.Close();
         }
 
@@ -201,15 +206,20 @@ namespace OpenExcel
             foreach (var column in columns)/* (int j = 0; j <= columns.Count; i++)*/
             {
                 //TODO: Write the stylkesheet here
-
-
+                var styleIdx = _styleSheetWriter.InsertIfNotExist(column.CellFormat);
+                if (column.CellFormatRule != null)
+                {
+                    var cellFormat = column.CellFormatRule(record);
+                    styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
+                }
 
                 attributes = new List<OpenXmlAttribute>
                     {
                         // this is the data type ("t"), with CellValues.String ("str")
                         new OpenXmlAttribute("t", null, column.CellValueType.ToString()),
                         //attributes.Add(new OpenXmlAttribute("s", null, "3"));
-                        new OpenXmlAttribute("s", null, column.StyleIndexId ?? "0")
+                        new OpenXmlAttribute("s", null, styleIdx.ToString())
+                        //new OpenXmlAttribute("s", null, column.StyleIndexId)
                     };
                 //attributes.Add(new OpenXmlAttribute("s", null, "1"));
 

@@ -12,5 +12,6 @@ namespace OpenExcel.Styles
         }
 
         public string UID { get; }
+
     }
 }

@@ -12,10 +12,10 @@ namespace OpenExcel.Styles
             UID = uid;
         }
         public string UID { get; }
-        public uint FontFamilyNumbering { get; set; }
+        public uint? FontFamilyNumbering { get; set; }
         public string FontName { get; set; }
         public string Color { get; set; }
-        public uint FontSize { get; set; }
+        public uint? FontSize { get; set; }
         public bool Italic { get; set; }
         public bool Bold { get; set; }        
     }
