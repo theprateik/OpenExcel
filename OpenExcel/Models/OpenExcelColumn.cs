@@ -9,6 +9,7 @@ namespace OpenExcel.Models
 {
     public class OpenExcelColumn<T>
     {
+        public delegate OpenExcelCellFormat CustomFormatRule(T record, uint rowNum, uint colNum);
         public OpenExcelColumn(string name, CellValues cellValueType, Func<T, string> selector)
         {
             Name = name;
@@ -22,7 +23,7 @@ namespace OpenExcel.Models
 
         public string StyleIndexId { get; set; }
         public OpenExcelCellFormat CellFormat { get; set; }
-        public Func<T, OpenExcelCellFormat> CellFormatRule { get; set; }
+        public CustomFormatRule CellFormatRule { get; set; }
         public Func<T, string> Selector { get; set; }
     }
 }

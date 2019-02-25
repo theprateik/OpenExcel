@@ -49,7 +49,7 @@ namespace OpenExcelRun
                 new OpenExcelColumn<Child>("Adopted?", CellValues.SharedString, (x) => x.IsAdopted ? "Yes" : "No")
                 {
                     /*CellFormat = Styles.CellFormat.C2*/
-                    CellFormatRule = (x) => x.IsAdopted ? Styles.CellFormat.C4 : Styles.CellFormat.C2
+                    CellFormatRule = (record, rowNum, colNum) => record.IsAdopted ? Styles.CellFormat.C4 : Styles.CellFormat.C2
                 },
                 new OpenExcelColumn<Child>("Home Schooled", CellValues.SharedString, (x) => x.IsHomeSchooled ? "Yes" : "No"){ CellFormat = Styles.CellFormat.C2}
             };
@@ -67,22 +67,25 @@ namespace OpenExcelRun
                     OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false }
                 };
 
-                openExcel.StartCreatingSheet("Prateik Sheet", sheetProperties);
+                openExcel.WriteStartSheet("Prateik Sheet", sheetProperties);
                 openExcel.InsertHeader(columns);
+
+                var childRowProperties = new OpenExcelRowProperties { OutlineLevel = 1 };
+
                 foreach (var person in listPersons)
                 {
-                    openExcel.InsertDataSetToSheet(new List<Person> { person }, columns);
-                    openExcel.InsertHeader(childColumns, 1);
-                    openExcel.InsertDataSetToSheet(person.Children, childColumns, 1);
-                    openExcel.InsertRowToSheet(new List<string> { string.Empty }, 1, CellValues.SharedString);
+                    openExcel.WriteRowSet(new List<Person> { person }, columns);
+                    openExcel.InsertHeader(childColumns, childRowProperties);
+                    openExcel.WriteRowSet(person.Children, childColumns, childRowProperties);
+                    openExcel.WriteRow(new List<string> { string.Empty }, childRowProperties, CellValues.SharedString);
                 }
-                openExcel.EndCreatingSheet();
+                openExcel.WriteEndSheet();
 
-                openExcel.StartCreatingSheet("Ronas Sheet");
-                openExcel.InsertDataSetToSheet(listPersons, columns);
-                openExcel.EndCreatingSheet();
+                openExcel.WriteStartSheet("Ronas Sheet");
+                openExcel.WriteRowSet(listPersons, columns);
+                openExcel.WriteEndSheet();
 
-                openExcel.EndCreatingWorkbook();
+                openExcel.Close();
             }
 
             stopwatch.Stop();

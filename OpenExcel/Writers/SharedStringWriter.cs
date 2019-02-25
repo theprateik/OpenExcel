@@ -7,7 +7,7 @@ using System.Text;
 
 namespace OpenExcel.Writers
 {
-    public class SharedStringWriter
+    public class SharedStringWriter : IDisposable
     {
         private readonly SpreadsheetDocument _xl;
         private readonly OpenXmlWriter _writer;
@@ -65,6 +65,11 @@ namespace OpenExcel.Writers
         {
             _writer.WriteEndElement();
             _writer.Close();
+        }
+
+        public void Dispose()
+        {
+            _writer.Dispose();
         }
     }
 }
