@@ -2,10 +2,10 @@
 using OpenExcel;
 using OpenExcel.Models;
 using OpenExcel.Props;
-using OpenExcel.Writers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace OpenExcelRun
 {
@@ -60,32 +60,32 @@ namespace OpenExcelRun
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            using (var openExcel = OpenExcelFactory.CreateOpenExcel("D:\\Projects\\Temp\\Persons2.xlsx"))
+            using (var api = OpenExcelFactory.CreateOpenExcelApi("D:\\Projects\\Temp\\Persons2.xlsx"))
             {
                 var sheetProperties = new OpenExcelSheetProperties
                 {
                     OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false }
                 };
 
-                openExcel.WriteStartSheet("Prateik Sheet", sheetProperties);
-                openExcel.InsertHeader(columns);
+                api.WriteStartSheet("Prateik Sheet", sheetProperties);
+                api.InsertHeader(columns);
 
                 var childRowProperties = new OpenExcelRowProperties { OutlineLevel = 1 };
 
                 foreach (var person in listPersons)
                 {
-                    openExcel.WriteRowSet(new List<Person> { person }, columns);
-                    openExcel.InsertHeader(childColumns, childRowProperties);
-                    openExcel.WriteRowSet(person.Children, childColumns, childRowProperties);
-                    openExcel.WriteRow(new List<string> { string.Empty }, childRowProperties, CellValues.SharedString);
+                    api.WriteRowSet(new List<Person> { person }, columns);
+                    api.InsertHeader(childColumns, childRowProperties);
+                    api.WriteRowSet(person.Children, childColumns, childRowProperties);
+                    api.WriteRow(new List<string> { string.Empty }, childRowProperties, CellValues.SharedString);
                 }
-                openExcel.WriteEndSheet();
+                api.WriteEndSheet();
 
-                openExcel.WriteStartSheet("Ronas Sheet");
-                openExcel.WriteRowSet(listPersons, columns);
-                openExcel.WriteEndSheet();
+                api.WriteStartSheet("Ronas Sheet");
+                api.WriteRowSet(listPersons, columns);
+                api.WriteEndSheet();
 
-                openExcel.Close();
+                api.Close();
             }
 
             stopwatch.Stop();

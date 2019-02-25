@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using OpenExcel.Apis;
 using OpenExcel.Models;
 using OpenExcel.Props;
 using OpenExcel.Writers;
@@ -11,7 +12,7 @@ namespace OpenExcel
 {
     public static class OpenExcelExtensions
     {
-        public static void InsertHeader<T>(this OpenExcelWriter writer, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
+        public static void InsertHeader<T>(this OpenExcelApi writer, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
         {
             writer.WriteRow(columns.Select(x => x.Name).ToList(), rowProperties, CellValues.SharedString);
         }

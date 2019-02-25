@@ -1,4 +1,5 @@
-﻿using OpenExcel.Writers;
+﻿using OpenExcel.Apis;
+using OpenExcel.Writers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,9 +8,9 @@ namespace OpenExcel
 {
     public static class OpenExcelFactory
     {
-        public static OpenExcelWriter CreateOpenExcel(string filePath)
+        public static OpenExcelApi CreateOpenExcelApi(string filePath)
         {
-            return new OpenExcelWriter(filePath);
+            return new OpenExcelApi(filePath);
         }
     }
 }

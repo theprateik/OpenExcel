@@ -3,13 +3,14 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using OpenExcel.Models;
 using OpenExcel.Props;
+using OpenExcel.Writers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OpenExcel.Writers
+namespace OpenExcel.Apis
 {
-    public class OpenExcelWriter : IDisposable
+    public class OpenExcelApi : IDisposable
     {
         private const uint _rowIdxReset = 0;
 
@@ -40,7 +41,7 @@ namespace OpenExcel.Writers
             }
         }
 
-        public OpenExcelWriter(string filePath)
+        public OpenExcelApi(string filePath)
         {
             _filePath = filePath;
             _xl = SpreadsheetDocument.Create(_filePath, SpreadsheetDocumentType.Workbook);
@@ -118,46 +119,29 @@ namespace OpenExcel.Writers
             _xl.Close();
         }
 
-        public void WriteRowSet<T>(List<T> data, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
+        public uint WriteStartRow(OpenExcelRowProperties rowProperties)
         {
-            for (int i = 0; i < data.Count; i++)
+            List<OpenXmlAttribute> attributes;
+
+            var rowNum = _newRowIdx;
+            attributes = new List<OpenXmlAttribute>
             {
-                WriteRow(data[i], columns, rowProperties);
+                new OpenXmlAttribute("r", null, rowNum.ToString())
+            };
+
+            if (rowProperties != null && rowProperties.OutlineLevel != 0)
+            {
+                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, rowProperties.OutlineLevel.ToString()));
             }
+
+            _workSheetWriter.WriteStartElement(new Row(), attributes);
+
+            return rowNum;
         }
 
-        public void WriteRow<T>(T record, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
+        public void WriteEndRow()
         {
-            WriteStartRow(rowProperties);
-
-            for (var i = 0; i < columns.Count; i++)
-            {
-                var styleIdx = _styleSheetWriter.InsertIfNotExist(columns[i].CellFormat);
-
-                if (columns[i].CellFormatRule != null)
-                {
-                    var cellFormat = columns[i].CellFormatRule(record, _rowIdx, (uint)(i+1));
-                    styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
-                }
-
-                string cellValue = columns[i].Selector(record);
-
-                WriteCell(cellValue, new OpenExcelCellProperties { DataType = columns[i].CellValueType, StyleIdx = styleIdx });
-            }
-
-            WriteEndRow();
-        }
-
-        public void WriteRow(List<string> cellValues, OpenExcelRowProperties rowProperties = default, EnumValue<CellValues> cellValueType = null)
-        {
-            WriteStartRow(rowProperties);
-
-            foreach (var v in cellValues)
-            {
-                WriteCell(v, new OpenExcelCellProperties { DataType = cellValueType });
-            }
-            
-            WriteEndRow();
+            _workSheetWriter.WriteEndElement();
         }
 
         public void WriteCell(string cellValue, OpenExcelCellProperties cellProperties)
@@ -183,29 +167,46 @@ namespace OpenExcel.Writers
             _workSheetWriter.WriteEndElement();
         }
 
-        public uint WriteStartRow(OpenExcelRowProperties rowProperties)
+        public void WriteRow(List<string> cellValues, OpenExcelRowProperties rowProperties = default, EnumValue<CellValues> cellValueType = null)
         {
-            List<OpenXmlAttribute> attributes;
+            WriteStartRow(rowProperties);
 
-            var rowNum = _newRowIdx;
-            attributes = new List<OpenXmlAttribute>
+            foreach (var v in cellValues)
             {
-                new OpenXmlAttribute("r", null, rowNum.ToString())
-            };
-
-            if (rowProperties != null && rowProperties.OutlineLevel!= 0)
-            {
-                attributes.Add(new OpenXmlAttribute("outlineLevel", string.Empty, rowProperties.OutlineLevel.ToString()));
+                WriteCell(v, new OpenExcelCellProperties { DataType = cellValueType });
             }
-
-            _workSheetWriter.WriteStartElement(new Row(), attributes);
-
-            return rowNum;
+            
+            WriteEndRow();
         }
 
-        public void WriteEndRow()
+        public void WriteRow<T>(T record, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
         {
-            _workSheetWriter.WriteEndElement();
+            WriteStartRow(rowProperties);
+
+            for (var i = 0; i < columns.Count; i++)
+            {
+                var styleIdx = _styleSheetWriter.InsertIfNotExist(columns[i].CellFormat);
+
+                if (columns[i].CellFormatRule != null)
+                {
+                    var cellFormat = columns[i].CellFormatRule(record, _rowIdx, (uint)(i+1));
+                    styleIdx = _styleSheetWriter.InsertIfNotExist(cellFormat);
+                }
+
+                string cellValue = columns[i].Selector(record);
+
+                WriteCell(cellValue, new OpenExcelCellProperties { DataType = columns[i].CellValueType, StyleIdx = styleIdx });
+            }
+
+            WriteEndRow();
+        }
+
+        public void WriteRowSet<T>(List<T> data, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
+        {
+            for (int i = 0; i < data.Count; i++)
+            {
+                WriteRow(data[i], columns, rowProperties);
+            }
         }
 
         public void Dispose()
