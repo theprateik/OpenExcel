@@ -119,7 +119,7 @@ namespace OpenExcel.Apis
             _xl.Close();
         }
 
-        public uint WriteStartRow(OpenExcelRowProperties rowProperties)
+        public void WriteStartRow(OpenExcelRowProperties rowProperties)
         {
             List<OpenXmlAttribute> attributes;
 
@@ -136,7 +136,7 @@ namespace OpenExcel.Apis
 
             _workSheetWriter.WriteStartElement(new Row(), attributes);
 
-            return rowNum;
+            //return rowNum;
         }
 
         public void WriteEndRow()

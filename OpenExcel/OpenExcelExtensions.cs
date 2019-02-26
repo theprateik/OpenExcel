@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
+using OpenExcel.Abstractions.FluentApi;
 using OpenExcel.Apis;
 using OpenExcel.Models;
 using OpenExcel.Props;

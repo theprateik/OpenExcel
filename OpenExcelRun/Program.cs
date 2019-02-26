@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using OpenExcel;
+using OpenExcel.Apis;
 using OpenExcel.Models;
 using OpenExcel.Props;
 using System;
@@ -90,6 +91,17 @@ namespace OpenExcelRun
 
             stopwatch.Stop();
             Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+
+
+            var fluent = OpenExcelFluentApi.CreateOpenExcelBuilder();
+
+            fluent.CreateExcelAs("D:\\Projects\\Temp\\Persons3.xlsx")
+                .InsertSheetAs("Prateik")
+                .InsertRowData(new List<string> {"Ram", "Shyam" }, cellValueType: CellValues.String)
+                .InsertSheetAs("Prateik 123")
+                .InsertRowData(new List<string> { "Ronas", "Dinesh" }, cellValueType: CellValues.String)
+                .Complete();
+
         }
     }
 }
