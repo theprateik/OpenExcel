@@ -113,7 +113,13 @@ namespace OpenExcel.Writers
                 {
                     _writer.WriteStartElement(new Fill());
                     {
-                        _writer.WriteElement(new PatternFill { PatternType = fill.PatternType, ForegroundColor = fill.ForegroundColor, BackgroundColor = fill.BackgroundColor });
+                        //if (fill.ForegroundColor != null)
+                        //{
+                        //    var a = (ForegroundColor)fill.ForegroundColor.CloneNode(true);
+                        //    _writer.WriteElement(new PatternFill { PatternType = fill.PatternType, ForegroundColor = a, BackgroundColor = fill.BackgroundColor });
+                        //}
+                        //else
+                            _writer.WriteElement(new PatternFill { PatternType = fill.PatternType, ForegroundColor = fill.ForegroundColor, BackgroundColor = fill.BackgroundColor });
                     }
                     _writer.WriteEndElement();
                 }

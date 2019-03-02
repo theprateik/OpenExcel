@@ -5,8 +5,8 @@ using System.Text;
 
 namespace OpenExcel.Abstractions.FluentApi
 {
-    public interface IOpenExcelBuilder
+    public interface IOpenExcelBuilder : IDisposable
     {
-        ISheetBuilder CreateExcelAs(string filePath);
+        IExcelBuilder CreateExcelAs(string filePath);
     }
 }

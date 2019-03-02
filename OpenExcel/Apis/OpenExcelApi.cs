@@ -61,15 +61,21 @@ namespace OpenExcel.Apis
             _workBookWriter.WriteStartElement(new Sheets());
         }
 
-        public void WriteStartSheet(string sheetName, OpenExcelSheetProperties sheetProperties = default)
+        /// <summary>
+        /// Starts writing sheet element
+        /// </summary>
+        /// <param name="sheetName"> Name of the Sheet. Empty or null sheet name will result in default sheet name.</param>
+        /// <param name="sheetProperties"></param>
+        public void WriteStartSheet(string sheetName = default, OpenExcelSheetProperties sheetProperties = default)
         {
             _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
 
+            uint newSheetId = _newSheetId;
             _workBookWriter.WriteElement(new Sheet()
             {
-                Name = sheetName,
-                SheetId = _newSheetId,
+                Name = (string.IsNullOrWhiteSpace(sheetName)) ? $"Sheet{newSheetId}" : sheetName,
+                SheetId = newSheetId,
                 Id = _xl.WorkbookPart.GetIdOfPart(wsPart)
             });
 
@@ -171,11 +177,14 @@ namespace OpenExcel.Apis
         {
             WriteStartRow(rowProperties);
 
-            foreach (var v in cellValues)
+            if (cellValues != default)
             {
-                WriteCell(v, new OpenExcelCellProperties { DataType = cellValueType });
+                foreach (var v in cellValues)
+                {
+                    WriteCell(v, new OpenExcelCellProperties { DataType = cellValueType });
+                }
             }
-            
+
             WriteEndRow();
         }
 

@@ -9,8 +9,8 @@ namespace OpenExcelRun.Styles
 {
     public static class Fill
     {
-        public static OpenExcelFill F1 = new OpenExcelFill(Guid.NewGuid().ToString()) { PatternType = PatternValues.Solid, ForegroundColor = new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "808080" } } };
+        public static OpenExcelFill F1 => new OpenExcelFill("{A7DAE395-4BC1-4FE8-904C-1D8686950892}") { PatternType = PatternValues.Solid, ForegroundColor = new ForegroundColor() { Rgb = "808080" } };
 
-        public static OpenExcelFill F2 = new OpenExcelFill(Guid.NewGuid().ToString()) { PatternType = PatternValues.Solid, ForegroundColor = new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "f90000" } } };
+        public static OpenExcelFill F2 => new OpenExcelFill("{759649CB-325C-4AE0-86AB-CB242922EAF9}") { PatternType = PatternValues.Solid, ForegroundColor = new ForegroundColor() { Rgb = "f90000" } };
     }
 }

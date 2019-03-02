@@ -1,48 +1,119 @@
-﻿using OpenExcel.Abstractions.FluentApi;
-using OpenExcel.Apis.FluentHelpers;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
+using OpenExcel.Abstractions.FluentApi;
+using OpenExcel.Models;
 using OpenExcel.Props;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace OpenExcel.Apis
 {
-    public class OpenExcelFluentApi : IOpenExcelFluentApi, IOpenExcelBuilder, ISheetBuilder
+    public class OpenExcelFluentApi : IOpenExcelBuilder, IExcelBuilder, ISheetBuilder, IRowBuilder, ICellBuilder
     {
+        private OpenExcelApi _api;
+
         private OpenExcelFluentApi()
         {
 
         }
 
-        public SheetBuilder SheetBuilder {get; private set;}
-        public RowDataBuilder RowDataBuilder {get; private set;}
-        public RowBuilder RowBuilder {get; private set;}
-        public CellBuilder CellBuilder {get; private set; }
-        public OpenExcelApi OpenExcelApi { get; private set; }
-
-        public ISheetBuilder CreateExcelAs(string filePath)
+        public IExcelBuilder CreateExcelAs(string filePath)
         {
-            OpenExcelApi = new OpenExcelApi(filePath);
-            SheetBuilder = new SheetBuilder(this);
-            RowDataBuilder = new RowDataBuilder(this);
-            RowBuilder = new RowBuilder(this);
-            CellBuilder = new CellBuilder(this);
+            _api = new OpenExcelApi(filePath);
 
             return this;
         }
 
-        public SheetBuilder InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties = default)
+        ISheetBuilder IExcelBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties)
         {
-            OpenExcelApi.WriteStartSheet(sheetName, sheetProperties);
+            _api.WriteStartSheet(sheetName, sheetProperties);
 
-            var sheetbuilder = new SheetBuilder(this);
-
-            return sheetbuilder;
+            return this;
         }
 
-        public OpenExcelApi GetOpenExcelApi()
+        ISheetBuilder ISheetBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties)
         {
-            return OpenExcelApi;
+            _api.WriteEndSheet();
+
+            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties);
+
+            return this;
+        }
+
+        public ISheetBuilder InsertRowData(List<string> cellValues, OpenExcelRowProperties rowProperties = null, EnumValue<CellValues> cellValueType = null)
+        {
+            _api.WriteRow(cellValues, rowProperties, cellValueType);
+
+            return this;
+        }
+
+        public ISheetBuilder InsertRowData<T>(T record, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
+        {
+            _api.WriteRow(record, columns, rowProperties);
+
+            return this;
+        }
+
+        public ISheetBuilder InsertRowDataSet<T>(List<T> records, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
+        {
+            _api.WriteRowSet(records, columns, rowProperties);
+
+            return this;
+        }
+
+        public ISheetBuilder InsertHeaderRow<T>(List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
+        {
+            (this as ISheetBuilder).InsertRowData(columns.Select(x => x.Name).ToList(), rowProperties, CellValues.SharedString);
+
+            return this;
+        }
+
+        public ISheetBuilder InsertEmptyRow()
+        {
+            (this as ISheetBuilder).InsertRowData(default);
+
+            return this;
+        }
+
+        public IRowBuilder CreateRow(OpenExcelRowProperties rowProperties)
+        {
+            _api.WriteStartRow(rowProperties);
+
+            return this;
+        }
+
+        public ICellBuilder InsertCell(string value, OpenExcelCellProperties cellProperties)
+        {
+            _api.WriteCell(value, cellProperties);
+
+            return this;
+        }
+
+        public ISheetBuilder EndRow()
+        {
+            _api.WriteEndRow();
+
+            return this;
+        }
+
+        void IExcelBuilder.Complete()
+        {
+            (this as IExcelBuilder).InsertSheetAs("Sheet1");
+            _api.WriteEndSheet();
+            _api.Close();
+        }
+
+        void ISheetBuilder.Complete()
+        {
+            _api.WriteEndSheet();
+            _api.Close();
+        }
+
+        public void Dispose()
+        {
+            _api.Dispose();
         }
 
         public static IOpenExcelBuilder CreateOpenExcelBuilder()
