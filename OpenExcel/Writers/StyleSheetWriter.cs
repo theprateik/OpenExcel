@@ -188,6 +188,9 @@ namespace OpenExcel.Writers
                 return cellFormatIdx; ;
             }
 
+            // Deep Clone the CellFormat to avoid 'Cannot insert the OpenXmlElement "newChild" because it is part of a tree. ' exception
+            cellFormat = (OpenExcelCellFormat)cellFormat.Clone();
+
             uint numFmtIdx = 0;
             if (cellFormat.NumberingFormat != null && !_fontIdx.TryGetValue(cellFormat.NumberingFormat.UID, out numFmtIdx))
             {

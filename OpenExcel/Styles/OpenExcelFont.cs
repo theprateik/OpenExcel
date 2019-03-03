@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OpenExcel.Styles
 {
-    public class OpenExcelFont
+    public class OpenExcelFont : ICloneable
     {
         public OpenExcelFont(string uid)
         {
@@ -18,6 +18,19 @@ namespace OpenExcel.Styles
         public HexBinaryValue Color { get; set; }
         public uint? FontSize { get; set; }
         public bool Italic { get; set; }
-        public bool Bold { get; set; }        
+        public bool Bold { get; set; }
+
+        /// <summary>
+        /// Creates a duplicate of the current value.
+        /// </summary>
+        /// <returns>The cloned value.</returns>
+        /// <remarks>This method is a deep copy clone.</remarks>
+        public object Clone()
+        {
+            var clone = (OpenExcelFont)MemberwiseClone();
+            clone.Color = (HexBinaryValue)Color?.Clone();
+
+            return clone;
+        }
     }
 }

@@ -7,7 +7,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace OpenExcel.Styles
 {
-    public class OpenExcelNumberingFormat
+    public class OpenExcelNumberingFormat : ICloneable
     {
         public OpenExcelNumberingFormat(string uid)
         {
@@ -15,5 +15,18 @@ namespace OpenExcel.Styles
         }
         public string UID { get; }
         public string FormatCode { get; set; }
+
+        /// <summary>
+        /// Creates a duplicate of the current value.
+        /// </summary>
+        /// <returns>The cloned value.</returns>
+        /// <remarks>This method is a deep copy clone.</remarks>
+        public object Clone()
+        {
+            var clone = (OpenExcelNumberingFormat)MemberwiseClone();
+
+
+            return clone;
+        }
     }
 }
