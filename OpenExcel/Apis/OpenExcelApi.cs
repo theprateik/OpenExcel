@@ -40,6 +40,7 @@ namespace OpenExcel.Apis
                 return _rowIdx;
             }
         }
+        private HashSet<uint> _colCharacterLengths =  new HashSet<uint>();
 
         public OpenExcelApi(string filePath)
         {
@@ -67,8 +68,10 @@ namespace OpenExcel.Apis
         /// <param name="sheetName"> Name of the Sheet. Empty or null sheet name will result in default sheet name.</param>
         /// <param name="sheetProperties"></param>
         /// <param name="sheetViewProperties"></param>
-        public void WriteStartSheet(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetViewProperties sheetViewProperties = default)
+        public void WriteStartSheet(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetViewProperties sheetViewProperties = default, OpenExcelSheetFormatProperties sheetFormatProperties = default)
         {
+            _colCharacterLengths.Clear();
+
             _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
 
@@ -86,6 +89,8 @@ namespace OpenExcel.Apis
             WriteSheetProperties(sheetProperties);
 
             WriteSheetViewProperties(sheetViewProperties);
+
+            WriteSheetFormatProperties(sheetFormatProperties);
 
             _workSheetWriter.WriteStartElement(new SheetData());
         }
@@ -148,6 +153,21 @@ namespace OpenExcel.Apis
 
             // Write end element for Sheetviews
             _workSheetWriter.WriteEndElement();
+        }
+
+        private void WriteSheetFormatProperties(OpenExcelSheetFormatProperties sheetFormatProperties)
+        {
+            if (sheetFormatProperties == default)
+            {
+                sheetFormatProperties = new OpenExcelSheetFormatProperties();
+            }
+
+            _workSheetWriter.WriteElement(new SheetFormatProperties
+            {
+                DefaultColumnWidth = sheetFormatProperties.DefaultColumnWidth,
+                DefaultRowHeight = sheetFormatProperties.DefaultColumnHeight,
+                CustomHeight = sheetFormatProperties.DefaultColumnHeight != 15
+            });
         }
 
         public void Close()

@@ -10,8 +10,8 @@ namespace OpenExcel.Abstractions.FluentApi
 {
     public interface ISheetBuilder
     {
-        ISheetBuilder InsertSheetAs(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetViewProperties sheetViewProperties = default);
-        ISheetBuilder InsertSheetWithFirstRowFrozenAs(string sheetName = default, OpenExcelSheetProperties sheetProperties = default);
+        ISheetBuilder InsertSheetAs(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetViewProperties sheetViewProperties = default, OpenExcelSheetFormatProperties sheetFormatProperties = default);
+        ISheetBuilder InsertSheetWithFirstRowFrozenAs(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetFormatProperties sheetFormatProperties = default);
         ISheetBuilder InsertRowData(List<string> cellValues, OpenExcelRowProperties rowProperties = default, EnumValue<CellValues> cellValueType = default);
         ISheetBuilder InsertRowData<T>(T record, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default);
         ISheetBuilder InsertRowDataSet<T>(List<T> records, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default);

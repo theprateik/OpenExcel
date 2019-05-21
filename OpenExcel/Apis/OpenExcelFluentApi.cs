@@ -26,14 +26,14 @@ namespace OpenExcel.Apis
             return this;
         }
 
-        ISheetBuilder IExcelBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties)
+        ISheetBuilder IExcelBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties, OpenExcelSheetFormatProperties sheetFormatProperties)
         {
-            _api.WriteStartSheet(sheetName, sheetProperties, sheetViewProperties);
+            _api.WriteStartSheet(sheetName, sheetProperties, sheetViewProperties, sheetFormatProperties);
 
             return this;
         }
 
-        ISheetBuilder IExcelBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        ISheetBuilder IExcelBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetFormatProperties sheetFormatProperties)
         {
             var sheetViewProperties = new OpenExcelSheetViewProperties
             {
@@ -43,25 +43,25 @@ namespace OpenExcel.Apis
                 }
             };
 
-            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties);
+            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties, sheetFormatProperties);
 
             return this;
         }
 
-        ISheetBuilder ISheetBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties)
+        ISheetBuilder ISheetBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties, OpenExcelSheetFormatProperties sheetFormatProperties)
         {
             _api.WriteEndSheet();
 
-            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties);
+            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties, sheetFormatProperties);
 
             return this;
         }
 
-        ISheetBuilder ISheetBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        ISheetBuilder ISheetBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetFormatProperties sheetFormatProperties)
         {
             _api.WriteEndSheet();
 
-            (this as IExcelBuilder).InsertSheetWithFirstRowFrozenAs(sheetName, sheetProperties);
+            (this as IExcelBuilder).InsertSheetWithFirstRowFrozenAs(sheetName, sheetProperties, sheetFormatProperties);
 
             return this;
         }
