@@ -66,7 +66,8 @@ namespace OpenExcel.Apis
         /// </summary>
         /// <param name="sheetName"> Name of the Sheet. Empty or null sheet name will result in default sheet name.</param>
         /// <param name="sheetProperties"></param>
-        public void WriteStartSheet(string sheetName = default, OpenExcelSheetProperties sheetProperties = default)
+        /// <param name="sheetViewProperties"></param>
+        public void WriteStartSheet(string sheetName = default, OpenExcelSheetProperties sheetProperties = default, OpenExcelSheetViewProperties sheetViewProperties = default)
         {
             _rowIdx = _rowIdxReset;
             var wsPart = _xl.WorkbookPart.AddNewPart<WorksheetPart>();
@@ -83,6 +84,9 @@ namespace OpenExcel.Apis
             _workSheetWriter.WriteStartElement(new Worksheet());
 
             WriteSheetProperties(sheetProperties);
+
+            WriteSheetViewProperties(sheetViewProperties);
+
             _workSheetWriter.WriteStartElement(new SheetData());
         }
 
@@ -95,21 +99,55 @@ namespace OpenExcel.Apis
 
         private void WriteSheetProperties(OpenExcelSheetProperties sheetProperties)
         {
-            if (sheetProperties != null)
+            if (sheetProperties == null)
             {
-                _workSheetWriter.WriteStartElement(new SheetProperties());
+                return;
+            }
+
+            _workSheetWriter.WriteStartElement(new SheetProperties());
+            {
+                if (sheetProperties.OutlineProperties != null)
                 {
-                    if (sheetProperties.OutlineProperties != null)
+                    _workSheetWriter.WriteElement(new OutlineProperties
                     {
-                        _workSheetWriter.WriteElement(new OutlineProperties
-                        {
-                            SummaryBelow = sheetProperties.OutlineProperties.SummaryBelow,
-                            SummaryRight = sheetProperties.OutlineProperties.SummaryRight
-                        });
-                    }
+                        SummaryBelow = sheetProperties.OutlineProperties.SummaryBelow,
+                        SummaryRight = sheetProperties.OutlineProperties.SummaryRight
+                    });
                 }
+            }
+            _workSheetWriter.WriteEndElement();
+        }
+
+        private void WriteSheetViewProperties(OpenExcelSheetViewProperties sheetViewProperties)
+        {
+            if (sheetViewProperties == default)
+            {
+                return;
+            }
+
+            // Write the start element fot SheetViews
+            _workSheetWriter.WriteStartElement(new SheetViews());
+            {
+                // Write the start element for Sheetiew with attributes
+                _workSheetWriter.WriteStartElement(new SheetView(), new List<OpenXmlAttribute> {new OpenXmlAttribute("workbookViewId", null, "0")});
+                {
+                    // Write the start element for Pane
+                    _workSheetWriter.WriteStartElement(new Pane(), new List<OpenXmlAttribute>
+                    {
+                        new OpenXmlAttribute("xSplit", null, sheetViewProperties.PaneProperties.XSplit.ToString()),
+                        new OpenXmlAttribute("ySplit", null, sheetViewProperties.PaneProperties.YSplit.ToString()),
+                        new OpenXmlAttribute("topLeftCell", null, sheetViewProperties.PaneProperties.TopLeftCell),
+                        new OpenXmlAttribute("state", null, sheetViewProperties.PaneProperties.State),
+                    });
+                    // Write end element for Pane
+                    _workSheetWriter.WriteEndElement();
+                }
+                // Write end element for Sheetview
                 _workSheetWriter.WriteEndElement();
             }
+
+            // Write end element for Sheetviews
+            _workSheetWriter.WriteEndElement();
         }
 
         public void Close()

@@ -7,5 +7,7 @@ namespace OpenExcel.Props
     public class OpenExcelSheetProperties
     {
         public OpenExcelOutlineProperties OutlineProperties { get; set; }
+
+        public OpenExcelSheetViewProperties SheetViewProperties { get; set; }
     }
 }

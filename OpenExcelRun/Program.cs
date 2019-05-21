@@ -25,24 +25,28 @@ namespace OpenExcelRun
             stopwatch.Stop();
             Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
 
-            stopwatch.Reset();
-            stopwatch.Start();
+            //stopwatch.Reset();
+            //stopwatch.Start();
 
-            UsingFluentApi.Run();
+            //UsingFluentApi.Run();
 
-            stopwatch.Stop();
-            Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+            //stopwatch.Stop();
+            //Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
 
-            stopwatch.Reset();
-            stopwatch.Start();
-
-
-            ByOpenExcelApi.Run();
+            //stopwatch.Reset();
+            //stopwatch.Start();
 
 
-            stopwatch.Stop();
-            Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+            //ByOpenExcelApi.Run();
 
+
+            //stopwatch.Stop();
+            //Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+
+
+            Console.Read();
+
+            //------------------------
             //var fluent = OpenExcelFluentApi.CreateOpenExcelBuilder();
 
             //fluent.CreateExcelAs("D:\\Projects\\Temp\\Persons3.xlsx")

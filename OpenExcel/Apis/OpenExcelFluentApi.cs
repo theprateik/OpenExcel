@@ -26,18 +26,42 @@ namespace OpenExcel.Apis
             return this;
         }
 
-        ISheetBuilder IExcelBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        ISheetBuilder IExcelBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties)
         {
-            _api.WriteStartSheet(sheetName, sheetProperties);
+            _api.WriteStartSheet(sheetName, sheetProperties, sheetViewProperties);
 
             return this;
         }
 
-        ISheetBuilder ISheetBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        ISheetBuilder IExcelBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        {
+            var sheetViewProperties = new OpenExcelSheetViewProperties
+            {
+                PaneProperties = new OpenExcelSheetViewPaneProperties
+                {
+                    XSplit = 0, YSplit = 1, TopLeftCell = "A2", State = PaneStateValues.FrozenSplit
+                }
+            };
+
+            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties);
+
+            return this;
+        }
+
+        ISheetBuilder ISheetBuilder.InsertSheetAs(string sheetName, OpenExcelSheetProperties sheetProperties, OpenExcelSheetViewProperties sheetViewProperties)
         {
             _api.WriteEndSheet();
 
-            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties);
+            (this as IExcelBuilder).InsertSheetAs(sheetName, sheetProperties, sheetViewProperties);
+
+            return this;
+        }
+
+        ISheetBuilder ISheetBuilder.InsertSheetWithFirstRowFrozenAs(string sheetName, OpenExcelSheetProperties sheetProperties)
+        {
+            _api.WriteEndSheet();
+
+            (this as IExcelBuilder).InsertSheetWithFirstRowFrozenAs(sheetName, sheetProperties);
 
             return this;
         }

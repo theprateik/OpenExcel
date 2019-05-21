@@ -15,5 +15,11 @@ namespace OpenExcelRun.Styles
 
         public static OpenExcelCellFormat C4 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { Font = Font.F2, Fill = Fill.F2 };
 
+        public static OpenExcelCellFormat C5 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { Font = Font.F2, Fill = Fill.F2, NumberingFormat = NumberFormat.N1 };
+
+        public static OpenExcelCellFormat C6 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N2 };
+
+        public static OpenExcelCellFormat C7 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N3 };
+
     }
 }

@@ -58,9 +58,12 @@ namespace OpenExcel.Writers
         {
             _writer.WriteStartElement(new NumberingFormats());
             {
+                uint formatId = _customNumFormatIdStarter;
                 foreach(var fmt in _numberingFormats)
                 {
-                    _writer.WriteElement(new NumberingFormat { NumberFormatId = _customNumFormatIdStarter, FormatCode = fmt.FormatCode });
+                    _writer.WriteElement(new NumberingFormat { NumberFormatId = formatId, FormatCode = fmt.FormatCode });
+
+                    formatId++;
                 }
             }
             _writer.WriteEndElement();
