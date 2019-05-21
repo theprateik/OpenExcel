@@ -220,10 +220,15 @@ namespace OpenExcel.Apis
             }
             attributes = new List<OpenXmlAttribute>
             {
-                new OpenXmlAttribute("t", null, cellProperties.DataType != null ? cellProperties.DataType.ToString() : ((EnumValue<CellValues>)CellValues.String).ToString()), // DataType
                 new OpenXmlAttribute("s", null, cellProperties.StyleIdx.ToString()) // Style Index
             };
-
+            if (cellProperties.DataType.ToString() != ((EnumValue<CellValues>)CellValues.Date).ToString())
+            {
+                attributes.Add(new OpenXmlAttribute("t", null,
+                    cellProperties.DataType != null
+                        ? cellProperties.DataType.ToString()
+                        : ((EnumValue<CellValues>) CellValues.String).ToString())); // DataType
+            }
             _workSheetWriter.WriteStartElement(new Cell(), attributes);
             {
                 _workSheetWriter.WriteElement(new CellValue(cellValue));

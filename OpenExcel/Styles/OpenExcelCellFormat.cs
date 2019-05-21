@@ -34,7 +34,6 @@ namespace OpenExcel.Styles
             clone.Font = (OpenExcelFont)Font?.Clone();
             clone.Fill = (OpenExcelFill)Fill?.Clone();
             clone.Border = (OpenExcelBorder)Border?.Clone();
-
             return clone;
         }
     }

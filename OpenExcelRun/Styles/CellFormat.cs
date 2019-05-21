@@ -21,5 +21,6 @@ namespace OpenExcelRun.Styles
 
         public static OpenExcelCellFormat C7 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N3 };
 
+        public static OpenExcelCellFormat C8 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N4 };
     }
 }

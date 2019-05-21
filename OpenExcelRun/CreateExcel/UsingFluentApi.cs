@@ -17,8 +17,8 @@ namespace OpenExcelRun.CreateExcel
             {
                 new OpenExcelColumn<Person>("Name", CellValues.SharedString, (x) => x.Name) { CellFormat = Styles.CellFormat.C1 },
                 //new OpenExcelColumn<Person>("Name", CellValues.String, (x) => x.Name) ,
-                new OpenExcelColumn<Person>("Age", CellValues.Number, (x) => x.Age.ToString()){ CellFormat = Styles.CellFormat.C3},
-                new OpenExcelColumn<Person>("Date Of Birth", CellValues.Number, (x) => x.DateOfBirth.ToString()){ CellFormat = Styles.CellFormat.C1},
+                new OpenExcelColumn<Person>("Age", CellValues.Date, (x) => x.Age.ToString()){ CellFormat = Styles.CellFormat.C3},
+                new OpenExcelColumn<Person>("Date Of Birth", CellValues.Date, (x) => "43101"){ CellFormat = Styles.CellFormat.C8},
                 new OpenExcelColumn<Person>("Income", CellValues.Number, (x) => x.Income.ToString()){ CellFormat = Styles.CellFormat.C7},
                 new OpenExcelColumn<Person>("Income", CellValues.Number, (x) => x.Income.ToString()){ CellFormat = Styles.CellFormat.C7},
                 new OpenExcelColumn<Person>("Income", CellValues.Number, (x) => x.Income.ToString()){ CellFormat = Styles.CellFormat.C7},
