@@ -210,18 +210,20 @@ namespace OpenExcel.Apis
 
         public void WriteCell(string cellValue, OpenExcelCellProperties cellProperties)
         {
+            cellValue = cellValue.RemoveHex();
+
             cellProperties = cellProperties ?? new OpenExcelCellProperties();
 
-            List<OpenXmlAttribute> attributes;
             if (cellProperties.DataType == CellValues.SharedString)
             {
                 var sharedStringIdx = _sharedStringWriter.Write(cellValue);
                 cellValue = sharedStringIdx.ToString();
             }
-            attributes = new List<OpenXmlAttribute>
+            var attributes = new List<OpenXmlAttribute>
             {
                 new OpenXmlAttribute("s", null, cellProperties.StyleIdx.ToString()) // Style Index
             };
+
             if (cellProperties.DataType.ToString() != ((EnumValue<CellValues>)CellValues.Date).ToString())
             {
                 attributes.Add(new OpenXmlAttribute("t", null,
@@ -229,6 +231,7 @@ namespace OpenExcel.Apis
                         ? cellProperties.DataType.ToString()
                         : ((EnumValue<CellValues>) CellValues.String).ToString())); // DataType
             }
+
             _workSheetWriter.WriteStartElement(new Cell(), attributes);
             {
                 _workSheetWriter.WriteElement(new CellValue(cellValue));
