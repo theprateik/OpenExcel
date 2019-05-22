@@ -13,7 +13,7 @@ namespace OpenExcelRun.Styles
 
         public static OpenExcelNumberingFormat N4 = new OpenExcelNumberingFormat(Guid.NewGuid().ToString()) { FormatCode = "dd/mm/yyyy" };
 
-        public static OpenExcelNumberingFormat N3 = new OpenExcelNumberingFormat(Guid.NewGuid().ToString()) { FormatCode = "0.00000" };
+        public static OpenExcelNumberingFormat N3 = new OpenExcelNumberingFormat(Guid.NewGuid().ToString()) { FormatCode = "0.0" };
 
     }
 }

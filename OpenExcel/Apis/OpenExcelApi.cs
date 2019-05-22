@@ -273,11 +273,11 @@ namespace OpenExcel.Apis
             WriteEndRow();
         }
 
-        public void WriteRowSet<T>(List<T> data, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
+        public void WriteRowSet<T>(IEnumerable<T> data, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = default)
         {
-            for (int i = 0; i < data.Count; i++)
+            foreach (var r in data)
             {
-                WriteRow(data[i], columns, rowProperties);
+                WriteRow(r, columns, rowProperties);
             }
         }
 

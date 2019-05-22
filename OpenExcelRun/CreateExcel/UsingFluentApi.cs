@@ -15,7 +15,7 @@ namespace OpenExcelRun.CreateExcel
         {
             var columns = new List<OpenExcelColumn<Person>>
             {
-                new OpenExcelColumn<Person>("Name", CellValues.SharedString, (x) => x.Name) { CellFormat = Styles.CellFormat.C1 },
+                new OpenExcelColumn<Person>("Name", CellValues.SharedString, (x) => x.Name) { CellFormat = Styles.CellFormat.C1, HeaderCellFormat = Styles.CellFormat.C9 },
                 //new OpenExcelColumn<Person>("Name", CellValues.String, (x) => x.Name) ,
                 new OpenExcelColumn<Person>("Age", CellValues.Date, (x) => x.Age.ToString()){ CellFormat = Styles.CellFormat.C3},
                 new OpenExcelColumn<Person>("Date Of Birth", CellValues.Date, (x) => "43101"){ CellFormat = Styles.CellFormat.C8},
@@ -63,7 +63,7 @@ namespace OpenExcelRun.CreateExcel
             {
                 var sheetBuilder = fluent.CreateExcelAs("E:\\Projects\\Temp\\Persons67.xlsx")
                     .InsertSheetWithFirstRowFrozenAs("Prateik", new OpenExcelSheetProperties { OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false } })
-                    .InsertHeaderRow(columns);
+                    .InsertHeaderRow(columns, Styles.CellFormat.C9);
 
                 var childRowProperties = new OpenExcelRowProperties { OutlineLevel = 1 };
                 var listPersons = GenerateData();
@@ -71,7 +71,7 @@ namespace OpenExcelRun.CreateExcel
                 {
                     sheetBuilder = sheetBuilder
                         .InsertRowData(person, columns)
-                        .InsertHeaderRow(childColumns, childRowProperties)
+                        .InsertHeaderRow(childColumns, Styles.CellFormat.C1, childRowProperties)
                         .InsertRowDataSet(person.Children, childColumns, childRowProperties)
                         //.InsertEmptyRow();
                         .InsertRowData(new List<string> { string.Empty }, childRowProperties, CellValues.SharedString);

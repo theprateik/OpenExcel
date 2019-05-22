@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OpenExcel.Styles;
 
 namespace OpenExcel.Apis
 {
@@ -80,16 +81,18 @@ namespace OpenExcel.Apis
             return this;
         }
 
-        public ISheetBuilder InsertRowDataSet<T>(List<T> records, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
+        public ISheetBuilder InsertRowDataSet<T>(IEnumerable<T> records, List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
         {
             _api.WriteRowSet(records, columns, rowProperties);
 
             return this;
         }
 
-        public ISheetBuilder InsertHeaderRow<T>(List<OpenExcelColumn<T>> columns, OpenExcelRowProperties rowProperties = null)
+        public ISheetBuilder InsertHeaderRow<T>(List<OpenExcelColumn<T>> columns, OpenExcelCellFormat cellFormat, OpenExcelRowProperties rowProperties = null)
         {
-            (this as ISheetBuilder).InsertRowData(columns.Select(x => x.Name).ToList(), rowProperties, CellValues.SharedString);
+            var headerColumns = columns.Select(x => new OpenExcelColumn<string>(x.Name, CellValues.SharedString, y => x.Name) { CellFormat = x.HeaderCellFormat ?? cellFormat }).ToList();
+
+            (this as ISheetBuilder).InsertRowData("", headerColumns, rowProperties);
 
             return this;
         }

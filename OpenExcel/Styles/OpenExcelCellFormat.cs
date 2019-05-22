@@ -22,6 +22,8 @@ namespace OpenExcel.Styles
 
         public OpenExcelBorder Border { get; set; }
 
+        public OpenExcelAlignmentProperties Alignment { get; set; }
+
         /// <summary>
         /// Creates a duplicate of the current value.
         /// </summary>

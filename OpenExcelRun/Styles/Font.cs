@@ -9,6 +9,8 @@ namespace OpenExcelRun.Styles
     {
         public static OpenExcelFont F1 = new OpenExcelFont(Guid.NewGuid().ToString()) { FontName = "Calibri", FontSize = 12, Color = "f90000", Bold = true };
 
+        public static OpenExcelFont F3 = new OpenExcelFont(Guid.NewGuid().ToString()) { FontName = "Calibri", FontSize = 16, Color = "f90000", Bold = true };
+
         public static OpenExcelFont F2 = new OpenExcelFont(Guid.NewGuid().ToString()) { FontSize = 8, Color = "f90000", Italic = true };
     }
 }

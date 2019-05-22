@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace OpenExcelRun.Styles
 {
@@ -22,5 +23,7 @@ namespace OpenExcelRun.Styles
         public static OpenExcelCellFormat C7 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N3 };
 
         public static OpenExcelCellFormat C8 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { NumberingFormat = NumberFormat.N4 };
+
+        public static OpenExcelCellFormat C9 = new OpenExcelCellFormat(Guid.NewGuid().ToString()) { Font = Font.F3, Fill = Fill.F1, Alignment = new OpenExcelAlignmentProperties() { Horizontal = HorizontalAlignmentValues.Center }};
     }
 }

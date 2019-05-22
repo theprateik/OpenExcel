@@ -23,6 +23,7 @@ namespace OpenExcel.Models
 
         public string StyleIndexId { get; set; }
         public OpenExcelCellFormat CellFormat { get; set; }
+        public OpenExcelCellFormat HeaderCellFormat { get; set; }
         public CustomFormatRule CellFormatRule { get; set; }
         public Func<T, string> Selector { get; set; }
     }

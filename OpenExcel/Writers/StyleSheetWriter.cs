@@ -219,8 +219,16 @@ namespace OpenExcel.Writers
             }
 
             var newCellFormatIdx = (uint)_cellFormatIdx.Count;
+            var alignment = cellFormat.Alignment == null ? null : new Alignment
+            {
+                Horizontal = cellFormat.Alignment.Horizontal,
+                Vertical = cellFormat.Alignment.Vertical,
+                WrapText = cellFormat.Alignment.WrapText,
+                TextRotation = cellFormat.Alignment.TextRotation
+
+            };
             _cellFormatIdx.Add(cellFormat.UID, (newCellFormatIdx));
-            _cellFormats.Add(new CellFormat { NumberFormatId = numFmtIdx, FontId = fontIdx, FillId = fillIdx, BorderId = 0U });
+            _cellFormats.Add(new CellFormat { NumberFormatId = numFmtIdx, FontId = fontIdx, FillId = fillIdx, BorderId = 0U, Alignment = alignment });
             return newCellFormatIdx;
         }
 
