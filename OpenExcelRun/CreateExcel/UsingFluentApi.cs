@@ -62,7 +62,9 @@ namespace OpenExcelRun.CreateExcel
             using (var fluent = OpenExcelFluentApi.CreateOpenExcelBuilder())
             {
                 var sheetBuilder = fluent.CreateExcelAs("E:\\Projects\\Temp\\Persons67.xlsx")
-                    .InsertSheetWithFirstRowFrozenAs("Prateik", new OpenExcelSheetProperties { OutlineProperties = new OpenExcelOutlineProperties { SummaryBelow = false } })
+                    .InsertSheetWithFirstRowFrozenAs("Prateik",
+                        new OpenExcelSheetProperties
+                            {OutlineProperties = new OpenExcelOutlineProperties {SummaryBelow = false}})
                     .InsertHeaderRow(columns, Styles.CellFormat.C9);
 
                 var childRowProperties = new OpenExcelRowProperties { OutlineLevel = 1 };
@@ -86,7 +88,7 @@ namespace OpenExcelRun.CreateExcel
 
         public static IEnumerable<Person> GenerateData()
         {
-            for (int i = 0; i <= 1000; i++)
+            for (int i = 0; i <= 100000; i++)
             {
                 yield return new Person
                 {
